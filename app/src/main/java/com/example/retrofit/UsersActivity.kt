@@ -20,25 +20,23 @@ class UsersActivity : AppCompatActivity() {
 
         var list: List<UserModel.User>? = listOf()
 
+
+
         GlobalScope.launch (Dispatchers.Default){
             var call = UserRetrofitService.retrofit.create(UserApiService::class.java).getUsersList()
             var response = call.execute()
 
-                if(response.isSuccessful){
+            if(response.isSuccessful){
+                withContext(Dispatchers.Main){
+                    list = response.body()?.data
 
+                    recycler = findViewById(R.id.recycler)
+                    var adapter = RecyclerAdapter(this@UsersActivity, list!!)
 
-                    withContext(Dispatchers.Main){
-                        list = response.body()?.data
-                    }
+                    recycler.adapter = adapter
+                    recycler.layoutManager = LinearLayoutManager(this@UsersActivity)
                 }
+            }
         }
-
-        findViewById<TextView>(R.id.text).text = list?.size?.toString()
-
-        recycler = findViewById(R.id.recycler)
-        var adapter = RecyclerAdapter(this, list!!)
-
-        recycler.adapter = adapter
-        recycler.layoutManager = LinearLayoutManager(this)
     }
 }
